@@ -5,10 +5,12 @@ ManaUnit(unit target, real mana)
 target      цель
 heal/mana   Сколько восстановить здоровья/маны
 
-RegenerationHeal(unit target, real heal, real time, real tickrate)
-RegenerationMana(unit target, real mana, real time, real tickrate)
+RegenerationHeal(unit target, real heal, real time, real tickrate, integer mode)
+RegenerationMana(unit target, real mana, real time, real tickrate, integer mode)
 
 time        Время за котороё нужно восстановить указанные хп/мп
+tickrate    Сколько пауза между лечением, по дефолту 0.2
+mode        0 - регенит указанное значение КАЖДЫЙ тик, 1 - регенит указанное значение в течении ВСЕХ тиков
 */
 
 
@@ -18,6 +20,8 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
     public {
         //real HealTotal
         //real ManaRestoreTotal
+        constant integer fixrestore = 0;
+        constant integer disrestore = 1;
         constant integer Heal = 0;
         constant integer ManaRestore = 1;
 
@@ -40,14 +44,15 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             
             }
         
-        function RegenerationUnitState(real restore, unit target, integer index, real time, real tickrate){
+        function RegenerationUnitState(real restore, unit target, integer index, real time, real tickrate, integer mode){
             Timer tmr = Timer.create();
             
-            if (tickrate <= 0) tickrate = 0.2;
+            if (tickrate <= 0.02) tickrate = 0.2;
             tmr.index = index;
             tmr.target = target;
-            tmr.restore = restore;
             tmr.count = R2I(time/tickrate);
+            if (mode == fixrestore) tmr.restore = restore;
+            if (mode == disrestore) tmr.restore = restore/tmr.count;
             tmr.tick = 0;
             
             tmr.start(0.2, true, function RegenerationUnitState_update);
@@ -62,11 +67,11 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             RestoreUnitState(mana,target,ManaRestore);
         }
         
-        function RegenerationHeal(unit target, real heal, real time, real tickrate) {
-            RegenerationUnitState(heal,target,Heal,time,tickrate);
+        function RegenerationHeal(unit target, real heal, real time, real tickrate, integer mode) {
+            RegenerationUnitState(heal,target,Heal,time,tickrate,mode);
         }
-        function RegenerationMana(unit target, real mana, real time, real tickrate) {
-            RegenerationUnitState(mana,target,ManaRestore,time,tickrate);
+        function RegenerationMana(unit target, real mana, real time, real tickrate, integer mode) {
+            RegenerationUnitState(mana,target,ManaRestore,time,tickrate,mode);
         }
 
     
