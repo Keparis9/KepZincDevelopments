@@ -5,10 +5,10 @@ ManaUnit(unit target, real mana)
 target      цель
 heal/mana   Сколько восстановить здоровья/маны
 
-RegenerationHeal(unit target, real heal, real time, real tickrate, integer mode)
-RegenerationMana(unit target, real mana, real time, real tickrate, integer mode)
-EXRegenerationHeal(unit target, real heal, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
-EXRegenerationMana(unit target, real mana, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
+RegenHeal(unit target, real heal, real time, real tickrate, integer mode)
+RegenMana(unit target, real mana, real time, real tickrate, integer mode)EX
+EXRegenHeal(unit target, real heal, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
+EXRegenMana(unit target, real mana, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
 
 time        Время за котороё нужно восстановить указанные хп/мп
 tickrate    Сколько пауза между лечением, по дефолту 0.2
@@ -38,7 +38,7 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             }
             
             
-        function RegenerationUnitState_update() {
+        function RegenUnitState_update() {
             Timer tmr = Timer.expired();
             RestoreUnitState(tmr.restore,tmr.target,tmr.index);
             tmr.tick = tmr.tick + 1;
@@ -46,7 +46,7 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             
             }
         
-        function RegenerationUnitState(real restore, unit target, integer index, real time, real tickrate, integer mode){
+        function RegenUnitState(real restore, unit target, integer index, real time, real tickrate, integer mode){
             Timer tmr = Timer.create();
             
             if (tickrate <= 0.02) tickrate = 0.2;
@@ -57,7 +57,7 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             if (mode == disrestore) tmr.restore = restore/tmr.count;
             tmr.tick = 0;
             
-            tmr.start(0.2, true, function RegenerationUnitState_update);
+            tmr.start(0.2, true, function RegenUnitState_update);
             }
     }
         
@@ -71,17 +71,17 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
         
         
         
-        function EXRegenerationHeal(unit target, real heal, real time) {
-            RegenerationUnitState(heal,target,Heal,time,0.23,0);
+        function EXRegenHeal(unit target, real heal, real time) {
+            RegenUnitState(heal,target,Heal,time,0.23,0);
         }
-        function EXRegenerationMana(unit target, real mana, real time) {
-            RegenerationUnitState(mana,target,ManaRestore,time,0.23,0);
+        function EXRegenMana(unit target, real mana, real time) {
+            RegenUnitState(mana,target,ManaRestore,time,0.23,0);
         }
-        function RegenerationHeal(unit target, real heal, real time, real tickrate, integer mode) {
-            RegenerationUnitState(heal,target,Heal,time,tickrate,mode);
+        function RegenHeal(unit target, real heal, real time, real tickrate, integer mode) {
+            RegenUnitState(heal,target,Heal,time,tickrate,mode);
         }
-        function RegenerationMana(unit target, real mana, real time, real tickrate, integer mode) {
-            RegenerationUnitState(mana,target,ManaRestore,time,tickrate,mode);
+        function RegenMana(unit target, real mana, real time, real tickrate, integer mode) {
+            RegenUnitState(mana,target,ManaRestore,time,tickrate,mode);
         }
 
     
