@@ -6,7 +6,7 @@ target      цель
 heal/mana   Сколько восстановить здоровья/маны
 
 RegenerationHeal(unit target, real heal, real time, real tickrate, integer mode)
-RegenerationMana(unit target, real mana, real time, real tickrate, integer mode)EX
+RegenerationMana(unit target, real mana, real time, real tickrate, integer mode)
 EXRegenerationHeal(unit target, real heal, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
 EXRegenerationMana(unit target, real mana, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
 
