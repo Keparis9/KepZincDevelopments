@@ -1,0 +1,122 @@
+/*
+DefaultTextTag(integer index, real x, real y, string text) -> texttag
+index       тип текстага    0 : Награда золотом
+                            1 : Наград деревом
+                            2 : Промах             
+                            3 : Критический удар             
+                            4 : Магический огонь
+                            5 : Отравленный нож  
+                            6 : Лечение
+                            7 : Мана восстановление
+target      цель
+text        текст
+
+*/
+library DefaultTextTag {    
+    public {
+        constant integer TextTagGoldBounty = 0;
+        constant integer TextTagLumberBounty = 1;
+        constant integer TextTagMiss = 2;
+        constant integer TextTagCriticalStrike = 3;
+        constant integer TextTagManaBurn = 4;
+        constant integer TextTagShadowStrike = 5;
+        constant integer TextTagHeal = 6;
+        constant integer TextTagManaRestore = 7;
+
+
+        function DefaultTextTag(integer index, real x, real y, string text) -> texttag {
+            tt = CreateTextTag();
+
+            SetTextTagText(tt, text, setting[index][6]+(S2R(text) * setting[index][7]));
+            SetTextTagPos(tt, x + setting[index][4], y, 0);
+            SetTextTagColor(tt, color[index][0], color[index][1], color[index][2], color[index][3]);
+            SetTextTagVelocity(tt, setting[index][0] + GetRandomReal(setting[index][5]*-1,setting[index][5]), setting[index][1]);
+            SetTextTagFadepoint(tt, setting[index][2]);
+            SetTextTagLifespan(tt, setting[index][3]);
+            SetTextTagVisibility(tt, IsVisibleToPlayer(x, y, GetLocalPlayer()));
+            SetTextTagPermanent(tt, false);
+
+            return tt;            
+        }
+
+        function DefaultTextTagWidget(integer index, widget target, string text) -> texttag {
+            return DefaultTextTag(index, GetWidgetX(target), GetWidgetY(target), text);
+        }
+
+        function TTGold(widget target, string text) {
+            DefaultTextTag(TextTagGoldBounty, GetWidgetX(target), GetWidgetY(target), text);
+        }
+        function TTLumber(widget target, string text) {
+            DefaultTextTag(TextTagLumberBounty, GetWidgetX(target), GetWidgetY(target), text);
+        }
+        function TTMiss(widget target, string text) {
+            DefaultTextTag(TextTagMiss, GetWidgetX(target), GetWidgetY(target), text);
+        }
+        function TTCrit(widget target, string text) {
+            DefaultTextTag(TextTagCriticalStrike, GetWidgetX(target), GetWidgetY(target), text);
+        }
+        function TTBurn(widget target, string text) {
+            DefaultTextTag(TextTagManaBurn, GetWidgetX(target), GetWidgetY(target), text);
+        }
+        function TTShadowStrike(widget target, string text) {
+            DefaultTextTag(TextTagShadowStrike, GetWidgetX(target), GetWidgetY(target), text);
+        }
+        function TTHeal(widget target, string text) {
+            DefaultTextTag(TextTagHeal, GetWidgetX(target), GetWidgetY(target), text);
+        }
+        function TTMana(widget target, string text) {
+            DefaultTextTag(TextTagManaRestore, GetWidgetX(target), GetWidgetY(target), text);
+        }
+    }
+
+    constant real fontSize = .024;
+    integer color[16][4];
+    real setting[16][7];
+    texttag tt;
+
+    function addColor(integer index, integer c0, integer c1, integer c2, integer c3) {
+        color[index][0] = c0;
+        color[index][1] = c1;
+        color[index][2] = c2;
+        color[index][3] = c3;
+    }
+
+    function addSetting(integer index, real s0, real s1, real s2, real s3, real s4, real s5, real s6, real s7) {
+        setting[index][0] = s0; // velocity 1
+        setting[index][1] = s1; // velocity 2
+        setting[index][2] = s2; // fadepoint
+        setting[index][3] = s3; // lifespan
+        setting[index][4] = s4; // offsetX
+        setting[index][5] = s5; // spread velocity 1
+        setting[index][6] = s6; // fontSize
+        setting[index][7] = s7; // spread fontSize
+    }
+
+    function onInit() {
+        integer index;
+    
+        addColor(TextTagGoldBounty, 255, 220, 0, 255);
+        addSetting(TextTagGoldBounty, .0, .03, 2, 3, - 16, 0, .024, 0);
+    
+        addColor(TextTagLumberBounty, 0, 200, 80, 255);
+        addSetting(TextTagLumberBounty, 0, .03, 2, 3, - 16, 0, .024, 0);
+    
+        addColor(TextTagMiss, 255, 0, 0, 255);
+        addSetting(TextTagMiss, 0, .03, 1, 3, 0, .024, 0, 0);
+
+        addColor(TextTagCriticalStrike, 255, 0, 0, 255);
+        addSetting(TextTagCriticalStrike, 0, .04, 2, 5, 0, 0, .024, 0);        
+    
+        addColor(TextTagManaBurn, 82, 82 , 255 , 255);
+        addSetting(TextTagManaBurn, 0, .04, 2, 5, 0, 0, .024, 0);          
+    
+        addColor(TextTagShadowStrike, 160, 255, 0, 255);
+        addSetting(TextTagShadowStrike, 0, .04, 2, 5, 0, 0, .024, 0); 
+        //=========
+        addColor(TextTagHeal, 190, 255, 30, 255);
+        addSetting(TextTagHeal, 0, 0.05, 2, 2, 0, 0.02, .018, 0.000001); 
+
+        addColor(TextTagManaRestore, 30, 190, 255, 255);
+        addSetting(TextTagManaRestore, 0, -0.05, 2, 2, 0, 0.02, .018, 0.000001); 
+    }
+}
