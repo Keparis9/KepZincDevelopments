@@ -40,13 +40,14 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             
             }
         
-        function RegenerationUnitState(real restore, unit target, integer index, real time){
+        function RegenerationUnitState(real restore, unit target, integer index, real time, real tickrate){
             Timer tmr = Timer.create();
             
+            if (tickrate <= 0) tickrate = 0.2;
             tmr.index = index;
             tmr.target = target;
             tmr.restore = restore;
-            tmr.count = R2I(time/0.2);
+            tmr.count = R2I(time/tickrate);
             tmr.tick = 0;
             
             tmr.start(0.2, true, function RegenerationUnitState_update);
@@ -61,11 +62,11 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             RestoreUnitState(mana,target,ManaRestore);
         }
         
-        function RegenerationHeal(unit target, real heal, real time) {
-            RegenerationUnitState(heal,target,Heal,time);
+        function RegenerationHeal(unit target, real heal, real time, real tickrate) {
+            RegenerationUnitState(heal,target,Heal,time,tickrate);
         }
-        function RegenerationMana(unit target, real mana, real time) {
-            RegenerationUnitState(mana,target,ManaRestore,time);
+        function RegenerationMana(unit target, real mana, real time, real tickrate) {
+            RegenerationUnitState(mana,target,ManaRestore,time,tickrate);
         }
 
     
