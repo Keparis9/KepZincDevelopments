@@ -5,8 +5,8 @@ ManaUnit(unit target, real mana)
 target      цель
 heal/mana   Сколько восстановить здоровья/маны
 
-RegenerationHeal(unit target, real heal, real time)
-RegenerationMana(unit target, real mana, real time)
+RegenerationHeal(unit target, real heal, real time, real tickrate)
+RegenerationMana(unit target, real mana, real time, real tickrate)
 
 time        Время за котороё нужно восстановить указанные хп/мп
 */
