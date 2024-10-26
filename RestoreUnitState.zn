@@ -6,7 +6,9 @@ target      цель
 heal/mana   Сколько восстановить здоровья/маны
 
 RegenerationHeal(unit target, real heal, real time, real tickrate, integer mode)
-RegenerationMana(unit target, real mana, real time, real tickrate, integer mode)
+RegenerationMana(unit target, real mana, real time, real tickrate, integer mode)EX
+EXRegenerationHeal(unit target, real heal, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
+EXRegenerationMana(unit target, real mana, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
 
 time        Время за котороё нужно восстановить указанные хп/мп
 tickrate    Сколько пауза между лечением, по дефолту 0.2
@@ -67,6 +69,14 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             RestoreUnitState(mana,target,ManaRestore);
         }
         
+        
+        
+        function EXRegenerationHeal(unit target, real heal, real time) {
+            RegenerationUnitState(heal,target,Heal,time,0.23,0);
+        }
+        function EXRegenerationMana(unit target, real mana, real time) {
+            RegenerationUnitState(mana,target,ManaRestore,time,0.23,0);
+        }
         function RegenerationHeal(unit target, real heal, real time, real tickrate, integer mode) {
             RegenerationUnitState(heal,target,Heal,time,tickrate,mode);
         }
