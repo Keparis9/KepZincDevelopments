@@ -1,0 +1,83 @@
+/*
+HealUnit(unit target, real heal)
+ManaUnit(unit target, real mana)
+
+target      цель
+heal/mana   Сколько восстановить здоровья/маны
+
+RegenerationHeal(unit target, real heal, real time)
+RegenerationMana(unit target, real mana, real time)
+
+time        Время за котороё нужно восстановить указанные хп/мп
+*/
+
+
+
+
+library RestoreUnitState requires DefaultTextTag, LibTimer {    
+    public {
+        //real HealTotal
+        //real ManaRestoreTotal
+        constant integer Heal = 0;
+        constant integer ManaRestore = 1;
+
+        function RestoreUnitState(real restore, unit target, integer index){
+            real nrestore = (GetUnitState(target,UnitMaxState[index])- GetUnitState(target,UnitState[index])); //недостающее хп/мп
+            if (restore>nrestore) restore = nrestore;
+            if (UnitAlive(target) && restore != 0) {
+                SetUnitState(target, UnitState[index],GetUnitState(target,UnitState[index])+ restore);
+                if (index == 0) TTHeal(target, R2S(restore));
+                if (index == 1) TTMana(target, R2S(restore));
+                }
+            }
+            
+            
+        function RegenerationUnitState_update() {
+            Timer tmr = Timer.expired();
+            RestoreUnitState(tmr.restore,tmr.target,tmr.index);
+            tmr.tick = tmr.tick + 1;
+            if (tmr.tick >= tmr.count) tmr.delete();
+            
+            }
+        
+        function RegenerationUnitState(real restore, unit target, integer index, real time){
+            Timer tmr = Timer.create();
+            
+            tmr.index = index;
+            tmr.target = target;
+            tmr.restore = restore;
+            tmr.count = R2I(time/0.2);
+            tmr.tick = 0;
+            
+            tmr.start(0.2, true, function RegenerationUnitState_update);
+            }
+    }
+        
+
+        function HealUnit(unit target, real heal) {
+            RestoreUnitState(heal,target,Heal);
+        }
+        function ManaUnit(unit target, real mana) {
+            RestoreUnitState(mana,target,ManaRestore);
+        }
+        
+        function RegenerationHeal(unit target, real heal, real time) {
+            RegenerationUnitState(heal,target,Heal,time);
+        }
+        function RegenerationMana(unit target, real mana, real time) {
+            RegenerationUnitState(mana,target,ManaRestore,time);
+        }
+
+    
+    
+    unitstate UnitMaxState[2];
+    unitstate UnitState[2];
+
+    function onInit() {
+        UnitMaxState[Heal] = UNIT_STATE_MAX_LIFE;
+        UnitState[Heal] = UNIT_STATE_LIFE;
+
+        UnitMaxState[ManaRestore] = UNIT_STATE_MAX_MANA;
+        UnitState[ManaRestore] = UNIT_STATE_MANA;
+    }
+}
