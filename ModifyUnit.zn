@@ -2,7 +2,7 @@
 ModifyUnit(target,r,mode,time)              takes unit target, real r, string mode, real time returns nothing
 
 unit    target  - жертва изменения характеристик
-real    r       - значение которое нужно прибавить или убавить (integer dmg конвертиться в реальную при расчётах, а atcd кулдаун атаки не может быть ниже 0.02-х)
+real    r       - значение которое нужно прибавить или убавить (integer dmg конвертиться в реальную при расчётах)
 string  mode    - режимы: turnspeed speed sight mpregen mp hpregen hp armor dmg atcd as
 boolean time    - Время забафа, если указано 0 и менее статы навсегда
 */
@@ -49,7 +49,7 @@ library ModifyUnit requires LibTimer {
             
             if (time > 0) {
                 tmr.mode = mode;
-                tmr.u = target;
+                tmr.target = target;
                 tmr.r = r;
                 tmr.start(time, false, function() {
                     Timer tmr = Timer.expired();
