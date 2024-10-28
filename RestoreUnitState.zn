@@ -24,14 +24,19 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             if (restore>nrestore) restore = nrestore;
             if (UnitAlive(target) && restore != 0) {
                 SetUnitState(target, UnitState[index],GetUnitState(target,UnitState[index])+ restore);
-                if (index == 0) TTHeal(target, R2S(restore));
-                if (index == 1) TTMana(target, R2S(restore));
+                //BJDebugMsg("RestoreUnitState");
+                if (index == 0) TTHeal(target, I2S(R2I(restore)));
+                if (index == 1) TTMana(target, I2S(R2I(restore)));
                 }
             }
             
             
         function RegenUnitState_update() {
             Timer tmr = Timer.expired();
+            //BJDebugMsg("RegenUnitState_update");
+            //BJDebugMsg(R2S(tmr.restore));
+            //BJDebugMsg(GetUnitName(tmr.target));
+            //BJDebugMsg(I2S(tmr.index));
             RestoreUnitState(tmr.restore,tmr.target,tmr.index);
             tmr.tick = tmr.tick + 1;
             if (tmr.tick >= tmr.count) tmr.delete();
@@ -40,6 +45,7 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
         
         function RegenUnitState(real restore, unit target, integer index, real time, real tickrate, integer mode){
             Timer tmr = Timer.create();
+            //BJDebugMsg("RegenUnitState");
             
             if (tickrate <= 0.02) tickrate = 0.2;
             tmr.index = index;
@@ -73,6 +79,7 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
         
         
         function EXRegenHeal(unit target, real heal, real time) {
+            //BJDebugMsg("EXRegenHeal");
             RegenUnitState(heal,target,Heal,time,0.23,0);
         }
         function EXRegenMana(unit target, real mana, real time) {
