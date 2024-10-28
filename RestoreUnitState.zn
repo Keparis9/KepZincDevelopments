@@ -6,7 +6,7 @@ target      цель
 heal/mana   Сколько восстановить здоровья/маны
 
 RegenHeal(unit target, real heal, real time, real tickrate, integer mode)
-RegenMana(unit target, real mana, real time, real tickrate, integer mode)EX
+RegenMana(unit target, real mana, real time, real tickrate, integer mode)
 EXRegenHeal(unit target, real heal, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
 EXRegenMana(unit target, real mana, real time) Упрощённая версия без мода[0] и тикрейта[0.23]
 
@@ -18,16 +18,8 @@ mode        0 - регенит указанное значение КАЖДЫЙ 
 
 
 
-library RestoreUnitState requires DefaultTextTag, LibTimer {    
-    public {
-        //real HealTotal
-        //real ManaRestoreTotal
-        constant integer fixrestore = 0;
-        constant integer disrestore = 1;
-        constant integer Heal = 0;
-        constant integer ManaRestore = 1;
-
-        function RestoreUnitState(real restore, unit target, integer index){
+library RestoreUnitState requires DefaultTextTag, LibTimer {   
+    function RestoreUnitState(real restore, unit target, integer index){
             real nrestore = (GetUnitState(target,UnitMaxState[index])- GetUnitState(target,UnitState[index])); //недостающее хп/мп
             if (restore>nrestore) restore = nrestore;
             if (UnitAlive(target) && restore != 0) {
@@ -58,10 +50,19 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
             tmr.tick = 0;
             
             tmr.start(0.2, true, function RegenUnitState_update);
-            }
-    }
-        
+            }    
 
+
+
+    public {
+        //real HealTotal
+        //real ManaRestoreTotal
+        constant integer fixrestore = 0;
+        constant integer disrestore = 1;
+        constant integer Heal = 0;
+        constant integer ManaRestore = 1;
+        
+        
         function HealUnit(unit target, real heal) {
             RestoreUnitState(heal,target,Heal);
         }
@@ -83,8 +84,8 @@ library RestoreUnitState requires DefaultTextTag, LibTimer {
         function RegenMana(unit target, real mana, real time, real tickrate, integer mode) {
             RegenUnitState(mana,target,ManaRestore,time,tickrate,mode);
         }
-
-    
+        
+    }
     
     unitstate UnitMaxState[2];
     unitstate UnitState[2];
