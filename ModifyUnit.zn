@@ -1,0 +1,95 @@
+/*
+ModifyUnit(target,r,mode,time)              takes unit target, real r, string mode, real time returns nothing
+
+unit    target  - жертва изменения характеристик
+real    r       - значение которое нужно прибавить или убавить (integer dmg конвертиться в реальную при расчётах, а atcd кулдаун атаки не может быть ниже 0.02-х)
+string  mode    - режимы: turnspeed speed sight mpregen mp hpregen hp armor dmg atcd as
+boolean time    - Время забафа, если указано 0 и менее статы навсегда
+*/
+
+
+
+
+library ModifyUnit requires LibTimer {    
+    public {
+        constant integer MaxModifyStats = 10;
+        
+        function ModifyUnit(unit target, real r,string mode,real time) {
+            Timer tmr = Timer.create();
+            
+            if (mode == "turnspeed") {
+                SetUnitTurnSpeed(target,GetUnitTurnSpeed(target) + r);
+            } else  if (mode == "speed") {
+                SetUnitMoveSpeed(target,GetUnitMoveSpeed(target) + r);
+            } else  if (mode == "sight") {
+                SetUnitCurrentSight(target,GetUnitCurrentSight(target) + r);
+            } else  if (mode == "mpregen") {
+                SetUnitManaRegen(target,GetUnitManaRegen(target) + r);
+            } else  if (mode == "mp") {
+                SetUnitMaxMana(target,GetUnitMaxMana(target) + r);
+            } else  if (mode == "hpregen") {
+                SetUnitLifeRegen(target,GetUnitLifeRegen(target) + r);
+            } else  if (mode == "hp") {
+                SetUnitMaxLife(target,GetUnitMaxLife(target) + r);
+            } else  if (mode == "armor") {
+                SetUnitArmour(target,GetUnitArmour(target) + r);
+            } else  if (mode == "dmg") {
+                SetUnitBaseDamageByIndex(target,0,GetUnitBaseDamageByIndex(target,0) + R2I(r));
+            } else  if (mode == "atcd") {
+                if (r > 0) {
+                    SetUnitAttackCooldownByIndex(target,0,GetUnitAttackCooldownByIndex(target,0) + r);
+                } else  if (r*-1 > GetUnitAttackCooldownByIndex(target,0)) {
+                    SetUnitAttackCooldownByIndex(target,0,0.02);
+                } else {
+                    SetUnitAttackCooldownByIndex(target,0,GetUnitAttackCooldownByIndex(target,0) + r);
+                }
+            } else  if (mode == "as") {
+                SetUnitAttackSpeed(target,GetUnitAttackSpeed(target) + r);
+            }
+            
+            if (time > 0) {
+                tmr.mode = mode;
+                tmr.u = target;
+                tmr.r = r;
+                tmr.start(time, false, function() {
+                    Timer tmr = Timer.expired();
+                    
+                    tmr.r = tmr.r*-1;
+                        if (tmr.mode == "turnspeed") {
+                    SetUnitTurnSpeed(tmr.target,GetUnitTurnSpeed(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "speed") {
+                    SetUnitMoveSpeed(tmr.target,GetUnitMoveSpeed(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "sight") {
+                    SetUnitCurrentSight(tmr.target,GetUnitCurrentSight(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "mpregen") {
+                    SetUnitManaRegen(tmr.target,GetUnitManaRegen(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "mp") {
+                    SetUnitMaxMana(tmr.target,GetUnitMaxMana(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "hpregen") {
+                    SetUnitLifeRegen(tmr.target,GetUnitLifeRegen(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "hp") {
+                    SetUnitMaxLife(tmr.target,GetUnitMaxLife(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "armor") {
+                    SetUnitArmour(tmr.target,GetUnitArmour(tmr.target) + tmr.r);
+                        } else  if (tmr.mode == "dmg") {
+                    SetUnitBaseDamageByIndex(tmr.target,0,GetUnitBaseDamageByIndex(tmr.target,0) + R2I(tmr.r));
+                        } else  if (tmr.mode == "atcd") {
+                    if (tmr.r > 0) {
+                        SetUnitAttackCooldownByIndex(tmr.target,0,GetUnitAttackCooldownByIndex(tmr.target,0) + tmr.r);
+                            } else  if (tmr.r*-1 > GetUnitAttackCooldownByIndex(tmr.target,0)) {
+                        SetUnitAttackCooldownByIndex(tmr.target,0,0.02);
+                            } else {
+                        SetUnitAttackCooldownByIndex(tmr.target,0,GetUnitAttackCooldownByIndex(tmr.target,0) + tmr.r);
+                            }
+                        } else  if (tmr.mode == "as") {
+                    SetUnitAttackSpeed(tmr.target,GetUnitAttackSpeed(tmr.target) + tmr.r);
+                    }
+                    
+                    tmr.delete();
+                });
+            } else {
+                tmr.delete();
+            }
+        }
+    }
+}
